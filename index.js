@@ -3,6 +3,7 @@ var bgImg = new Image();
 var RLmit = null;
 var point = {};
 var isShowAll = false;
+var tapCount = 0;
 var co = getId('canvas');
 var cxtO = co.getContext("2d");
 var cxtF = null;
@@ -86,22 +87,34 @@ function bindClick(){
   	resetPIC();
   }
   getId("showBtn").onclick = function(){
-  	myTimer = setInterval(function(){
-  		if(R >= RLmit){clearInterval(this); return;}
-  		R += 100;
-  		showWholeFrontBg();
-  	},50);
+  	if(tapCount == 1){return;}
+		tapCount++;
+		isShowAll = true;
+		startShow();
   }
+}
+
+function startShow(){
+	if(!isShowAll){return;}
+	myTimer = setInterval(function(){
+		if(R >= RLmit){
+			clearInterval(myTimer); // cann't use clearInterval(this);
+			isShowAll = false;
+			// myTimer = null;
+			tapCount = 0;
+			return;
+		}
+		R += 50;
+		drawFrontBg();
+	},50);
 }
 
 function resetPIC(){
 	R = 60;
-	clearInterval(myTimer);
+	tapCount = 0;
+	if(isShowAll == true){
+		clearInterval(myTimer);
+	}
 	isShowAll = false;
-	drawFrontBg();
-}
-
-function showWholeFrontBg(){
-	isShowAll = true;
 	drawFrontBg();
 }
