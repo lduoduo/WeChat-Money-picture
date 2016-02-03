@@ -1,0 +1,50 @@
+body, .canvasWrapper{
+	width: 100vw;
+	height: 100vh;
+	padding: 0;
+	margin: 0;
+	text-align: center;
+	font-size: 15px;
+}
+.canvasWrapper img{
+	margin: 0 auto;
+	height: 100vh;
+	width: auto;
+	-webkit-filter: blur(20px);
+	filter: blur(20px);
+	/*z-index: 2;*/
+}
+.canvasWrapper img, .canvasWrapper canvas{
+	position: absolute;
+	left:0;
+}
+.canvasWrapper canvas{
+	z-index: 2;
+	background: transparent;
+}
+.controller{
+	position: absolute;
+	/*height: 10vh;*/
+	width: 90%;
+	bottom: 0;
+	font-size: 1.5em;
+	text-align: center;
+	vertical-align: middle;
+	padding: 3vh 5%;
+	background: rgba(109, 180, 226, 0.4);
+	z-index: 10;
+}
+
+.btn{
+	padding: 1% 2%;
+	color: white;
+	text-decoration: none;
+	border: 1px solid rgba(1,1,1,0.4);
+}
+
+.fix{
+	position: absolute;
+	left: 1%;
+	bottom: 10%;
+	padding: 1% 2%; 
+}
