@@ -49,12 +49,12 @@ body, .canvasWrapper{
 	padding: 1% 2%; 
 }
 
-@media screen and (min-width: 1024px){
+@media screen and (min-width: 1025px){
 	.canvasWrapper img, .canvasWrapper canvas{
 		left:11%;
 	}
 }
-@media screen and (max-width: 1023px){
+@media screen and (max-width: 1024px){
 	.canvasWrapper img, .canvasWrapper canvas{
 		left:0;
 	}

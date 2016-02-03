@@ -1,24 +1,26 @@
+
 var R = 60;
 var bgImg = new Image();
 var RLmit = null;
 var point = {};
 var isShowAll = false;
+var tapCount = 0;
 var co = getId('canvas');
 var cxtO = co.getContext("2d");
 var cxtF = null;
 var myTimer = null;
 
 window.onload = function(){
-  
-  co.width = document.body.clientWidth;
-  co.height = document.body.clientHeight;
-  cxtO.m_drawBg("test.jpg",co.width,co.height);
-  
+
+	co.width = document.body.clientWidth;
+	co.height = document.body.clientHeight;
+	cxtO.m_drawBg("test.jpg",co.width,co.height);
+
 }
 
 CanvasRenderingContext2D.prototype.m_drawBg = function(src){
-  bgImg.src = src;
-  bgImg.onload = function(){
+	bgImg.src = src;
+	bgImg.onload = function(){
   	// var scale = bgImg.height/cxtO.canvas.height;
   	co.width = bgImg.width*canvas.height/bgImg.height;
   	drawBg();
@@ -81,27 +83,40 @@ function reverseEffect(data){
 }
 
 function bindClick(){
-  RLmit = Math.sqrt(co.width*co.width+co.height*co.height);
+	RLmit = Math.sqrt(co.width*co.width+co.height*co.height);
 	getId("resetBtn").onclick = function(){
-  	resetPIC();
-  }
-  getId("showBtn").onclick = function(){
-  	myTimer = setInterval(function(){
-  		if(R >= RLmit){clearInterval(this); return;}
-  		R += 100;
-  		showWholeFrontBg();
-  	},50);
-  }
+		resetPIC();
+	}
+	getId("showBtn").onclick = function(){
+		if(tapCount == 1){return;}
+		tapCount++;
+		isShowAll = true;
+		startShow();
+	}
+}
+
+function startShow(){
+	if(!isShowAll){return;}
+	myTimer = setInterval(function(){
+		if(R >= RLmit){
+			clearInterval(myTimer); // cann't use clearInterval(this);
+			isShowAll = false;
+			// myTimer = null;
+			tapCount = 0;
+			return;
+		}
+		R += 50;
+		drawFrontBg();
+	},50);
 }
 
 function resetPIC(){
 	R = 60;
-	clearInterval(myTimer);
+	tapCount = 0;
+	if(isShowAll == true){
+		clearInterval(myTimer);
+	}
 	isShowAll = false;
 	drawFrontBg();
 }
 
-function showWholeFrontBg(){
-	isShowAll = true;
-	drawFrontBg();
-}
