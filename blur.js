@@ -1,21 +1,24 @@
 
 var R = 60;
-var bgImg = new Image();
-var RLmit = null;
-var point = {};
-var isShowAll = false;
-var tapCount = 0;
+var bgImg = new Image(); //whole bg;
+var RLmit = null; //limit of R for circle
+var point = {}; // position for circle
+var mousePoint = {}; // position of mouse
+var isShowAll = false; // if display all image
+var isReset = false; // if click reset button
+var tapCount = 0; // prevent user keep clicking show all button;
 var co = getId('canvas');
 var cxtO = co.getContext("2d");
 var cxtF = null;
 var myTimer = null;
+var stars = new Stars();
 
 window.onload = function(){
-
 	co.width = document.body.clientWidth;
 	co.height = document.body.clientHeight;
 	cxtO.m_drawBg("test.jpg",co.width,co.height);
-
+	stars.init(cxtO,"star.png",co.width,co.height,100);
+  co.addEventListener("mousemove",move,false);
 }
 
 CanvasRenderingContext2D.prototype.m_drawBg = function(src){
@@ -62,7 +65,7 @@ function drawFrontBg(){
 	drawBg();
 	cxtO.save();
 	cxtO.beginPath();
-	if(!isShowAll){
+	if(!point.x || !isShowAll && isReset){
 		point.x = Math.random()*(cxtO.canvas.width-2*R)+R;
 		point.y = Math.random()*(cxtO.canvas.height-2*R)+R;
 	}
@@ -117,6 +120,30 @@ function resetPIC(){
 		clearInterval(myTimer);
 	}
 	isShowAll = false;
+	isReset = true;
 	drawFrontBg();
+	stars.load();
 }
 
+function move(e){
+	mousePoint = getPosition((e.clientX?e.clientX:e.pageX),(e.clientY?e.clientY:e.pageY));
+	if(mousePoint.x == -1 || mousePoint.y == -1){return;}
+	isReset = false;
+	// stars.isAllOut = false;
+	lightling();
+}
+
+function lightling(){
+	if(isReset){return;}
+	drawFrontBg();
+	stars.update();
+
+	window.requestAnimFrame(lightling);
+}
+
+window.requestAnimFrame = (function() {
+	return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+		function( /* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+			return window.setTimeout(callback, 1000 / 60);
+		};
+})();

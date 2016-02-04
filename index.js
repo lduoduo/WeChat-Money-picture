@@ -14,7 +14,6 @@ window.onload = function(){
   co.width = document.body.clientWidth;
   co.height = document.body.clientHeight;
   cxtO.m_drawBg("test.jpg",co.width,co.height);
-  
 }
 
 CanvasRenderingContext2D.prototype.m_drawBg = function(src){
