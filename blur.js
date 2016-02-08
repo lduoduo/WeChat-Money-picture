@@ -8,37 +8,78 @@ var isShowAll = false; // if display all image
 var isReset = false; // if click reset button
 var tapCount = 0; // prevent user keep clicking show all button;
 var co = getId('canvas');
+var bgImage = getId('bgImage');
+var controller = getId('controller');
 var cxtO = co.getContext("2d");
 var cxtF = null;
 var myTimer = null;
 var stars = new Stars();
 
 window.onload = function(){
-	co.width = document.body.clientWidth;
-	co.height = document.body.clientHeight;
-	cxtO.m_drawBg("test.jpg",co.width,co.height);
-	stars.init(cxtO,"star.png",co.width,co.height,100);
-  co.addEventListener("mousemove",move,false);
+	cxtO.m_drawBg("test.jpg");
+	
+	co.addEventListener("mousemove",move,false);
+	//alert(navigator.userAgent.toLowerCase());
 }
+
+window.addEventListener("resize", function() {
+	console.log('resizeHV');
+	setCanvasWH(function(){
+		drawFrontBg();
+		drawStar();
+	});
+}, false);
 
 CanvasRenderingContext2D.prototype.m_drawBg = function(src){
 	bgImg.src = src;
-	bgImg.onload = function(){
-  	// var scale = bgImg.height/cxtO.canvas.height;
-  	co.width = bgImg.width*canvas.height/bgImg.height;
-  	drawBg();
-  	createFrontCanvas();
-  	bindClick();
-  }
+	bgImg.onload = function(){	
+		setCanvasWH(function(){
+			//drawBg();
+			createFrontCanvas();
+			drawStar();
+			bindClick();
+		});
+		
+	}
 }
 
-function drawBg(){
-	cxtO.clearRect(0,0,cxtO.canvas.width,cxtO.canvas.height);
-	// cxtO.beginPath();
-	// cxtO.drawImage(bgImg,0,0,cxtO.canvas.width,cxtO.canvas.height);
-	// var imageData = cxtO.getImageData(0,0,cxtO.canvas.width,cxtO.canvas.height);
-	// imageData.data = reverseEffect(imageData.data);
-	// cxtO.putImageData(imageData,0,0,0,0,cxtO.canvas.width,cxtO.canvas.height);
+function setCanvasWH(cb){
+	co.width = document.body.clientWidth;
+	co.height = document.body.clientHeight;
+	if(bgImg.width != 0){
+		var scale1 = bgImg.width/bgImg.height;
+		var scale2 = co.width/co.height;
+		if(scale1 >=　scale2){
+			co.height = bgImg.height*canvas.width/bgImg.width;
+			bgImage.style.width = '100%';
+			bgImage.style.height = 'auto';
+			co.style.marginLeft = '-'+co.width/2+'px';
+			co.style.marginTop = '-'+co.height/2+'px';
+		}
+		else{
+			co.width = bgImg.width*canvas.height/bgImg.height;
+			bgImage.style.height = '100%';
+			bgImage.style.width = 'auto';
+			co.style.marginLeft = '-'+co.width/2+'px';
+			co.style.marginTop = '-'+co.height/2+'px';		
+		}
+		if(cxtF){
+			cxtF.canvas.width = co.width;
+			cxtF.canvas.height = co.height;
+			cxtF.canvas.style.marginLeft = '-'+co.width/2+'px';
+			cxtF.canvas.style.marginTop = '-'+co.height/2+'px';
+			cxtF.drawImage(bgImg,0,0,cxtF.canvas.width,cxtF.canvas.height);
+		}
+	}
+	if(cb){cb();}
+}
+
+function drawStar(){
+	if(stars.cxt){
+		stars.load(co.width,co.height);
+	}else{
+		stars.init(cxtO,"star.png",co.width,co.height,100);
+	}
 }
 
 function getId(id){
@@ -56,13 +97,16 @@ function createFrontCanvas(){
 	var temp = document.createElement('canvas');
 	temp.width = co.width;
 	temp.height = co.height;
+	temp.style.marginLeft = '-'+co.width/2+'px';
+	temp.style.marginTop = '-'+co.height/2+'px';
 	cxtF = temp.getContext("2d");
 	cxtF.drawImage(bgImg,0,0,temp.width,temp.height);
 	drawFrontBg();
 }
 
 function drawFrontBg(){
-	drawBg();
+	cxtO.clearRect(0,0,cxtO.canvas.width,cxtO.canvas.height);
+	//drawBg();
 	cxtO.save();
 	cxtO.beginPath();
 	if(!point.x || !isShowAll && isReset){
@@ -71,7 +115,10 @@ function drawFrontBg(){
 	}
 	cxtO.arc(point.x,point.y,R,0,2*Math.PI);
 	cxtO.clip();
-	cxtO.drawImage(cxtF.canvas,point.x-R,point.y-R,2*R,2*R,point.x-R,point.y-R,2*R,2*R);
+	var sx = point.x - R;
+	var sy = point.y - R;
+	cxtO.drawImage(cxtF.canvas,sx,sy,2*R,2*R,sx,sy,2*R,2*R);
+	//cxtO.drawImage(cxtF.canvas,point.x-R,point.y-R,2*R,2*R,point.x-R,point.y-R,2*R,2*R);
 	cxtO.closePath();
 	cxtO.restore();
 }
@@ -91,21 +138,14 @@ function bindClick(){
 		resetPIC();
 	}
 	getId("showBtn").onclick = function(){
-		if(tapCount == 1){return;}
-		tapCount++;
-		isShowAll = true;
-		startShow();
+		viewWholePIC();
 	}
 }
 
 function startShow(){
-	if(!isShowAll){return;}
 	myTimer = setInterval(function(){
 		if(R >= RLmit){
 			clearInterval(myTimer); // cann't use clearInterval(this);
-			isShowAll = false;
-			// myTimer = null;
-			tapCount = 0;
 			return;
 		}
 		R += 50;
@@ -115,9 +155,12 @@ function startShow(){
 
 function resetPIC(){
 	R = 60;
-	tapCount = 0;
 	if(isShowAll == true){
 		clearInterval(myTimer);
+		if(bgImage.className == ""){
+			bgImage.className += "blur";
+		}
+		
 	}
 	isShowAll = false;
 	isReset = true;
@@ -143,7 +186,26 @@ function lightling(){
 
 window.requestAnimFrame = (function() {
 	return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
-		function( /* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-			return window.setTimeout(callback, 1000 / 60);
-		};
+	function( /* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+		return window.setTimeout(callback, 1000 / 60);
+	};
 })();
+
+function viewWholePIC(){
+	if(isShowAll){return;}
+	isShowAll = true;
+	cxtO.clearRect(0,0,cxtO.canvas.width,cxtO.canvas.height);
+	var data = getBrowserInfo();
+	if(data.browser == "chrome"){
+		startShow();
+	}
+	else{
+		// bgImage.className += ' showAnimation';
+		bgImage.className = bgImage.className.replace("blur","");
+		// bgImage.removeAttribute('class');
+		// bgImage.animate(
+		// 	{},
+		// 	10000);
+  }
+  controller.innerHtml = "谢谢老板的红包";
+}

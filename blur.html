@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+	<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
 	<title>红包照片</title>
 	<link rel="stylesheet" href="blur.css"/>
 </head>
@@ -11,14 +11,16 @@
 		<canvas id="canvas">
 			当前浏览器不支持canvas绘图，请更换浏览器试试
 		</canvas>
-		<img src="test.jpg" alt="">
-		<div class="controller">
-		  <a href="index.html" class="btn fix" id="">纯Canvas效果</a>
-			<a href="#" class="btn" id="showBtn">显示全图</a>
+		<img src="test.jpg" class="blur" id="bgImage" alt="">
+		
+	</div>
+	<div class="controller" id="controller">
+			<a href="#" class="btn" id="showBtn">支付红包显示全图</a>
 			<a href="#" class="btn" id="resetBtn">重置</a>
-		</div>
 	</div>
 	<script src="stars.js"></script>
 	<script src="blur.js"></script>
+	<script src="jquery-2.1.4.min.js"></script>
+	<script src="userAgent.js"></script>
 </body>
 </html>

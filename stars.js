@@ -22,11 +22,13 @@ Stars.prototype.init = function(cxt,src,w,h,num){
 	this.num = (num?num:50);
 	var temp = this;
 	this.image.onload = function(){
-		temp.load(num);
+		temp.load();
 	}
 }
 
-Stars.prototype.load = function(num){
+Stars.prototype.load = function(w,h){
+	this.w = w?w:this.w;
+	this.h = h?h:this.h;
 	for (var i = 0; i < this.num; i++) {
 		this.temp.isOut = false;
 		this.temp.x = Math.floor(Math.random()*this.w);
@@ -62,11 +64,14 @@ Stars.prototype.update = function(){
 		// }
 		obj.x += obj.vx;
 		obj.y += obj.vy;
-		if(obj.sx >= this.image.width){
-			obj.sx = 0;
-		}else{
-			obj.sx += 1;
-		}
+		obj.sx += 1;
+		obj.sx %= 7;
+		
+		// if(obj.sx >= this.image.width){
+		// 	obj.sx = 0;
+		// }else{
+		// 	obj.sx += 1;
+		// }
 		this.drawStar(obj);
 	}
 }
